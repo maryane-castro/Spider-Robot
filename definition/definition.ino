@@ -69,7 +69,7 @@ int high = 0;   // How high the robot is standing
 
 void setup() {
   //inicializar bluethh
-  serialblue.begin(9600);
+  Serial.begin(9600);
 
   
   //inicializaar os servos
@@ -77,8 +77,8 @@ void setup() {
   myServo_3.attach(3, 500, 2500);    //testado no tinkercad!!
   myServo_4.attach(4, 500, 2500);
   myServo_5.attach(5, 500, 2500);
-  myServo_6.attach(6, 500, 2500);
-  myServo_7.attach(7, 500, 2500);
+  myServo_6.attach(10, 500, 2500);
+  myServo_7.attach(11, 500, 2500);
   myServo_8.attach(8, 500, 2500);
   myServo_9.attach(9, 500, 2500);
 
@@ -92,42 +92,57 @@ void loop() {
   
   center_servos();  // Center all servos
   high = 15;        // Set hight to 15
-  spd = 3;          // Set speed to 3
+  spd = 10;          // Set speed to 3
 
   while (1 == 1){
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 
 
-    if (serialblue.available()){  //se o bluethh estiver disponivel ele começa a ler e receber os valores
-      blue = serialblue.read();
-    }
-  
-    switch(blue){
-      case 'F':
-        lastValue = 'F';
-        forward();
-        break;
+    if (Serial.available()){  //se o bluethh estiver disponivel ele começa a ler e receber os valores
+      blue = Serial.read();
+
     
-      case 'B':
-        lastValue = 'B';
-        back();
-        break;
-        
-      case 'D':
-        lastValue = 'D';
-        turn_right();
-        break;
+  
+          if(blue == 'F'){
+              lastValue = 'F';
+              forward();
+          }
+              
+          
+          
+          if(blue == 'B'){
+              lastValue = 'B';
+              back();
+          }
+              
+          
+              
+            if(blue == 'D'){
+              lastValue = 'D';
+              turn_right();
+            }
+              
+          
 
-      case 'E':
-        lastValue = 'E';
-        turn_left();
-        break;
+            if(blue == 'E'){
+              lastValue = 'E';
+              turn_left();
+              }
 
-      default:
-        break;
 
-    } //fim do if do switch
+            if(blue == 'C'){
+              lastValue = 'C';
+              dance();
+              }
+
+            if(blue == 'W'){
+              lastValue = 'W';
+              wave();
+              }
+
+    }
+
 
 
 
@@ -137,7 +152,103 @@ void loop() {
   } //fim do while
 
 }
-  
+
+
+
+void wave()
+{
+  /*
+  myServo1 - Front Left Pivot Servo
+  myServo2 - Front Left Lift Servo
+  myServo3 - Back Left Pivot Servo
+  myServo4 - Back Left Lift Servo
+  myServo5 - Back Right Pivot Servo
+  myServo6 - Back Right Lift Servo
+  myServo7 - Front Right Pivot Servo
+  myServo8 - Front Right Lift Servo
+  */
+
+  center_servos();
+  myServo_4.write(45);
+  myServo_6.write(45);
+  delay(200);
+  myServo_8.write(0);
+  delay(200);
+  myServo_7.write(180);
+  delay(200);
+  myServo_7.write(30);
+  delay(300);
+  myServo_7.write(180);
+  delay(300);
+  myServo_7.write(30);
+  delay(300);
+  myServo_7.write(s41);
+  delay(300);
+  myServo_8.write(s42);
+  center_servos();
+
+}
+
+
+//=-==-=-=-=-==
+void dance()
+{
+  center_servos();
+  delay(100);
+  lean_left();
+  delay(300);
+  lean_right();
+  delay(300);
+  lean_left();
+  delay(300);
+  lean_right();
+  delay(300);
+  lean_left();
+  delay(300);
+  lean_right();
+  delay(300);
+  lean_left();
+  delay(300);
+  lean_right();
+  delay(800);
+  center_servos();
+  delay(300);
+  bow();
+  center_servos();
+}
+void bow()
+{
+  center_servos();
+  delay(200);
+  myServo_2.write(15);
+  myServo_8.write(15);
+  delay(700);
+  myServo_2.write(90);
+  myServo_8.write(90);
+  delay(700);
+}
+
+
+void lean_left()
+{
+  myServo_2.write(15);
+  myServo_4.write(15);
+  myServo_6.write(150);
+  myServo_8.write(150);
+}
+
+//== Lean_Right ============================================================================
+
+void lean_right()
+{
+  myServo_2.write(150);
+  myServo_4.write(150);
+  myServo_6.write(15);
+  myServo_8.write(15);
+}
+//=-=-=-=-=-=-=-=
+
+
 
 void center_servos()
 {
@@ -188,7 +299,7 @@ void forward()
   d60 = (60 + dd),
   d90 = (90 + dd);
 
-  // set servo positions and speeds needed to walk forward one step
+  // set servo positions and speeds needed to walk forward one step  (???)
   // (LFP,  LBP, RBP,  RFP, LFL, LBL, RBL, RFL, S1, S2, S3, S4)
   srv(a180, b0 , c120, d60, 42,  33,  33,  42,  1,  3,  1,  1);
   srv( a90, b30, c90,  d30, 6,   33,  33,  42,  3,  1,  1,  1);
@@ -316,7 +427,7 @@ void srv( int  p11, int p21, int p31, int p41, int p12, int p22, int p32, int p4
       else
         s31 = p31;
     }
-
+ 
     if (s31 > p31)
     {
       if ((s31 - sp3) >= p31)
@@ -411,6 +522,8 @@ void srv( int  p11, int p21, int p31, int p41, int p12, int p22, int p32, int p4
     }
     
     // Write Pivot Servo Values
+
+    //escreve as posiçõa dos servos motores
     myServo_2.write(s11 + da);
     myServo_4.write(s21 + db);
     myServo_6.write(s31 + dc);
@@ -426,5 +539,3 @@ void srv( int  p11, int p21, int p31, int p41, int p12, int p22, int p32, int p4
 
   }//while
 } //srv
-
-/*dança
